@@ -1,0 +1,35 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7.0.1
+        
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          mkdir -p ~/devops-assignment
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy the compose file on the server
+        run: |
+          scp -i ~/.ssh/id_rsa docker-compose.yml \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/devops-assignment/docker-compose.yml
+
+      - name: Deploy over SSH
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            cd ~/devops-assignment
+            docker compose -f pull
+            docker compose up -d --wait
+          EOF
