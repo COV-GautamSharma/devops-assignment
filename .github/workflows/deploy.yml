@@ -19,10 +19,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & push backend
+      - name: Build & push docker image
         uses: docker/build-push-action@v7.3.0
         with:
-          context: ./backend
+          context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-assignment:latest
         
