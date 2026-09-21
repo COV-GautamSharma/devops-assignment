@@ -31,6 +31,6 @@ jobs:
           ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd ~/devops-assignment
             export DOCKER_USERNAME=$DOCKERHUB_USERNAME
-            docker compose -f pull
+            docker compose -f docker-compose.yml pull
             docker compose up -d --wait
           EOF
