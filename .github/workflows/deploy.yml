@@ -42,7 +42,8 @@ jobs:
       - name: Deploy over SSH
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-          "DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} bash -s" << 'EOF'
+          "DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} DOCKER_TOKEN=${{ secrets.DOCKERHUB_TOKEN }} bash -s" << 'EOF'
+            echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
             cd ~/devops-assignment
             export DOCKER_USERNAME
             docker compose -f docker-compose.yml pull
