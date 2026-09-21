@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # TODO: add a "test" job that checks out the code, sets up Node 20,
+  #       installs dependencies, and runs `npm test`.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up node 20
+        uses: actions/setup-node@v6.5.0
+        with:
+          node-version: '20-alpine'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Runs Tests
+        run: npm test
+
+  build:
+    runs-on: ubuntu-latest
+    # TODO: make this job run only after the test job passes.
+    needs: test
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v7.4.0
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-assignment:${{ github.sha }}
+      
