@@ -19,7 +19,7 @@ jobs:
       - name: Copy the file on server
         run: |
           scp -i docker-compose.yml \
-          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~$~/devops-assignment/docker-compose.yml
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/devops-assignment/docker-compose.yml
 
       - name: Deploy over SSH
         run: |
